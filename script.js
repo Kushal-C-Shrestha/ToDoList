@@ -48,6 +48,8 @@ function updateListType(listName,listColor){
 
     const anchor=document.createElement('a');
     anchor.href="#";
+    anchor.classList.add("nav-links");
+    anchor.id=listName;
 
     const spanColor=document.createElement('span');
     spanColor.className="list-icon";
@@ -75,7 +77,60 @@ function updateListType(listName,listColor){
     option.value=listName;
     selectType.appendChild(option);
 
+    createPage(listName,listColor);
+}
+
+//Function to create a page for the list type.
+function createPage(listName,listColor){
+    const parentDiv=document.querySelector('.body-content');
+
+    const div=document.createElement('div');
+    div.classList.add('main');
+    div.classList.add('page');
+    div.id=`${listName}-page`;
+
+    const headerDiv=document.createElement('div');
+    headerDiv.className="main-header";
+
+    const header=document.createElement('h1');
+    header.textContent=listName;
+
+    const span=document.createElement('span');
+    span.className=`${listName}-number`;
+    span.id=`${listName}-number`;
+
+    const button=document.createElement('button');
+    button.className="add-task__btn";
+    button.id=`${listName}-task__btn`;
+
+    const img=document.createElement('img');
+    img.src="assets/icons/plus.svg";
+
+    const textNode=document.createTextNode("Add New Task");
     
+    const taskDiv=document.createElement('div');
+    taskDiv.classList="tasks";
+    taskDiv.classList=`${listName}-tasks`;
+    taskDiv.id=`${listName}-tasks`;
+    
+    headerDiv.appendChild(header);
+    headerDiv.appendChild(span);
+
+    button.appendChild(img);
+    button.appendChild(textNode);
+
+    div.appendChild(headerDiv);
+    div.appendChild(button);
+    div.appendChild(taskDiv);
+
+    parentDiv.appendChild(div);
+    
+    updatePage(listName,div);
+}
+
+//Function to update the pages 
+function updatePage(listName,div){
+    pages[`${listName}-page`]=div;
 }
 
 //function to remove used color from available colors.
@@ -185,7 +240,7 @@ addTaskBtn.forEach(btn=>{
 
 //Closing the add task section
 const closeBtn=document.querySelector(".close");
-closeBtn.btn.addEventListener("click",()=>{
+closeBtn.addEventListener("click",()=>{
             document.querySelector(".error").classList.remove('open');
             if (document.getElementById("title").value!==""){
                 alert("Are you sure ?");
@@ -196,6 +251,7 @@ closeBtn.btn.addEventListener("click",()=>{
             }
 })
 
+//Displaying the type options at first 
 const selectType=document.getElementById("type");
 function displayListTypes(){
     listTypes.forEach(obj=>{
@@ -211,6 +267,7 @@ function checkDate(id){
     setDate(selectDate,id); 
 }
 
+//Setting the date of task form according to the need.
 function setDate(select,id){
     select.disabled=false;
     select.value='';
@@ -243,6 +300,7 @@ function resetForm(){
     select.removeAttribute('max');
 }
 
+//Adding submit listener to the form.
 const form=document.getElementById("add-form");
 form.addEventListener('submit',(event)=>{
     event.preventDefault();
@@ -368,10 +426,6 @@ const updateUpcomingNumber=()=>{
 }   
 
 
-
-
-const links=document.querySelectorAll(".nav-links");
-
 const pages={};
 document.querySelectorAll(".page").forEach(page=>{
     pages[page.id]=page;
@@ -388,61 +442,32 @@ const showPage=(key)=>{
     
 }
 
-links.forEach(link=>
-    link.addEventListener(
+const linkContainers=document.querySelectorAll('.nav-section__list');
+linkContainers.forEach(linkContainer=>
+    linkContainer.addEventListener(
         'click',(event)=>{
-            event.preventDefault();
-            const pageId=`${link.id}-page`;
-            resetForm();
-            showPage(pageId);
+            const clickedItem=event.target.closest('li');
+            const link=clickedItem.firstElementChild;
+            console.log(link);
+            if (link.classList.contains("nav-links")){
+                event.preventDefault();
+                const pageId=`${link.id}-page`;
+                resetForm();
+                showPage(pageId);
+            }
         }
     )
 )
 
 
-// Set initial value for the openMenu variable
-let openMenu = null;
-
-// Select the parent container where all the notes reside
-const notesContainer = document.querySelector('.notes-container');
-
-// Event delegation: Attach event listener to the parent container
-notesContainer.addEventListener('click', (event) => {
-    // Check if the clicked element is the ellipsis icon
-    if (event.target.classList.contains('note-more')) {
-        const currentMenu = event.target.nextElementSibling; // Select the menu next to the ellipsis icon
-        
-        // If another menu is open and it's not the current one, close it
-        if (openMenu && openMenu !== currentMenu) {
-            openMenu.classList.remove('active');
-        }
-
-        // Toggle the current menu's active state
-        currentMenu.classList.toggle('active');
-
-        // Update the openMenu reference based on the current menu's state
-        openMenu = currentMenu.classList.contains('active') ? currentMenu : null;
-
-        // Prevent event from bubbling up further
-        event.stopPropagation();
-    }
-});
-
-// Close the open menu when clicking outside of it
-document.addEventListener('click', () => {
-    if (openMenu) {
-        openMenu.classList.remove('active');
-        openMenu = null;
-    }
-});
 
 
-document.addEventListener('click', function () {
-    if (openMenu) {
-      openMenu.classList.remove('active'); // Close the currently open menu
-      openMenu = null; // Reset the openMenu variable
-    }
-});
+// document.addEventListener('click', function () {
+//     if (openMenu) {
+//       openMenu.classList.remove('active'); // Close the currently open menu
+//       openMenu = null; // Reset the openMenu variable
+//     }
+// });
 
 
 
