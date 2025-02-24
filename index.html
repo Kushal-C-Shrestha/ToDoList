@@ -17,45 +17,42 @@
                 <h3 id="nav-header__text">Menu</h3>
                 <img src="assets/icons/menu.svg" alt="" id="menu-btn">
             </div>
-            <div class="nav-search">
-                <img src="assets/icons/search.svg" alt="" class="search-icon">
-                <input type="text" placeholder="Search" class="search-input">
-            </div>
             <div class="nav-section">
                 <p class="nav-section__headers">TASKS</p>
                 <ul class="nav-section__list" >
                     <li>
-                        <a href="#" class="nav-links" id="upcoming">
+                        <a href="#" class="nav-links active" id="upcoming">
                             <img src="assets/icons/upcoming.svg" alt="" class="list-icon">
                             <p>Upcoming</p>  
-                            <span id="upcoming-number" class="updating-number upcoming-number"></span>
+                            <span id="upcoming-number" class="nav-number upcoming-number active"></span>
                         </a>
                     </li>
                     <li>
                         <a href="#" class="nav-links" id="today">
                             <img src="assets/icons/today.svg" alt="" class="list-icon">
                             <p>Today</p>
-                            <span class="updating-number today-number"></span>
+                            <span class="nav-number today-number"></span>
                         </a>
                     </li>
                     <li>
                         <a href="#" class="nav-links" id="all">
                             <img src="assets/icons/all.svg" alt="" class="list-icon">
                             <p>All tasks</p>
+                            <span class="nav-number all-number"></span>
                         </a>
                     </li>
                 </ul>
             </div>
             <div class="nav-section">
                 <p class="nav-section__headers">LISTS</p>
-                <ul class="nav-section__list" id="list-type">    
+                <ul class="nav-section__list" >    
                     <li>
                         <a href="#" class="nav-links" id="personal">
                             <span class="list-icon" style="background-color:#FF6B6B;">
     
                             </span>
                             <p>Personal</p>
-                            <span id="personal-number" class="updating-number">
+                            <span id="personal-number" class="nav-number personal-number">
     
                             </span>
                         </a>
@@ -66,38 +63,9 @@
     
                             </span>
                             <p>Work</p>
-                            <span id="work-number" class="updating-number">
+                            <span id="work-number" class="nav-number work-number">
     
                             </span>
-                        </a>
-                    </li>
-                </ul>
-                <button id="add-list">
-                    <img src="assets/icons/plus.svg" alt=""> Add new list
-                </button>
-            </div>
-            <div class="add-list__section"> 
-                <div class="input-section">
-                    <span class="list-icon" id="input-section__color"></span>
-                    <input type="text" placeholder="List name" id="list-input" autocomplete="off">
-                </div>
-                <div class="list-colors">
-                    
-                </div>
-            </div>
-            <div class="nav-footer">
-                <ul class="nav-section__list">
-                    <li>
-                        <a href="#" class="nav-links" id="
-                        settings">
-                            <img src="assets/icons/settings.svg" alt="" class="list-icon"></i>
-                            <p>Settings</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <img src="assets/icons/log.svg" class="list-icon"></img>
-                            <p>Sign out</p>
                         </a>
                     </li>
                 </ul>
@@ -105,87 +73,162 @@
         </nav>
     
         <div class="main page " id="upcoming-page">
-            <div class="main-header">
-                <h1>Upcoming</h1>
-                <span id="upcoming-number" class="upcoming-number"></span>
-            </div>
-            <div class="main-upper task-sections">
-                <h3>Today</h3>
-                <button class="add-task__btn" id="today-task__btn">
-                    <img src="assets/icons/plus.svg" alt="">Add New Task
-                </button>
-                <div class="tasks today-tasks" id="today-tasks">
-    
+            <div class="main-contents">
+                <div class="main-header">
+                    <h1>Upcoming</h1>
+                    <span id="upcoming-number" class="upcoming-number header-number"></span>
                 </div>
-            </div>
-            <div class="main-lower">
-                <div class="main-lower__tomorrow task-sections" >
-                    <h3>Tomorrow</h3>
-                    <button class="add-task__btn" id="tomorrow-task__btn">
-                        <img src="assets/icons/plus.svg" alt=""> Add new task
+                <div class="main-upper task-sections">
+                    <h3>Today</h3>
+                    <button class="add-task__btn" id="today-task__btn" data-id="today">
+                        <img src="assets/icons/plus.svg" alt="">Add New Task
                     </button>
-                    <div class="tasks tomorrow-tasks" id="tomorrow-tasks">
-                        
+                    <div class="tasks today-tasks" id="today-tasks">
+        
                     </div>
                 </div>
-                <div class="main-lower__week task-sections">
-                    <h3>This week</h3>
-                    <button class="add-task__btn" id="week-task__btn">
-                        <img src="assets/icons/plus.svg" alt=""> Add new task
-                    </button>
-                    <div class="tasks week-tasks" id="week-tasks">
-                        
+                <div class="main-lower">
+                    <div class="main-lower__tomorrow task-sections" >
+                        <h3>Tomorrow</h3>
+                        <button class="add-task__btn" id="tomorrow-task__btn" data-id="tomorrow">
+                            <img src="assets/icons/plus.svg" alt=""> Add new task
+                        </button>
+                        <div class="tasks tomorrow-tasks" id="tomorrow-tasks">
+                            
+                        </div>
                     </div>
+                    <div class="main-lower__week task-sections">
+                        <h3>This week</h3>
+                        <button class="add-task__btn" id="week-task__btn" data-id="week">
+                            <img src="assets/icons/plus.svg" alt=""> Add new task
+                        </button>
+                        <div class="tasks week-tasks" id="week-tasks">
+                            
+                        </div>
+                    </div>
+                </div>    
+            </div>
+            <div class="footer-contents">
+                <div class="buttons-container" data-id="upcoming-buttons_container">
+                    <button class="footer-buttons" id="delete-button">
+                        Delete
+                    </button>
+                    <button class="footer-buttons" id="complete-button">
+                        Mark as complete
+                    </button>
                 </div>
-            </div>    
+            </div>
         </div>
     
         <div class="main page" id="today-page">
-            <div class="main-header">
-                <h1>Today</h1>
-                <span id="today-number" class="today-number"></span>
+            <div class="main-contents">
+                <div class="main-header">
+                    <h1>Today</h1>
+                    <span id="today-number" class="today-number header-number"></span>
+                </div>
+        
+                <button class="add-task__btn" id="today-task__btn" data-id="today">
+                    <img src="assets/icons/plus.svg" alt="">Add New Task
+                </button>
+                <div class="tasks today-tasks" id="today-tasks">
+        
+                </div>
             </div>
-    
-            <button class="add-task__btn" id="today-task__btn">
-                <img src="assets/icons/plus.svg" alt="">Add New Task
-            </button>
-            <div class="tasks today-tasks" id="today-tasks">
-    
+
+            <div class="footer-contents">
+                <div class="buttons-container" data-id="today-buttons_container">
+                    <button class="footer-buttons" id="delete-button">
+                        Delete
+                    </button>
+                    <button class="footer-buttons" id="complete-button">
+                        Mark as complete
+                    </button>
+                </div>
             </div>
         </div>
     
         
     
-        <div class="page" id="all-page">
-            <p>All tasks </p>
+        <div class="main page" id="all-page">
+            <div class="main-contents">
+                <div class="main-header">
+                    <h1>All Tasks</h1>
+                    <span id="all-number" class="all-number header-number"></span>
+                </div>
+        
+                <button class="add-task__btn" id="all-task__btn">
+                    <img src="assets/icons/plus.svg" alt="">Add New Task
+                </button>
+                <div class="tasks all-tasks" id="all-tasks">
+        
+                </div>
+            </div>
+
+            <div class="footer-contents">
+                <div class="buttons-container" data-id="all-buttons_container">
+                    <button class="footer-buttons" id="delete-button">
+                        Delete
+                    </button>
+                    <button class="footer-buttons" id="complete-button">
+                        Mark as complete
+                    </button>
+                </div>
+            </div>
+            
         </div>
     
     
         <div class="main page" id="personal-page">
-            <div class="main-header">
-                <h1>Personal</h1>
-                <span id="personal-number" class="personal-number"></span>
+            <div class="main-contents">
+                <div class="main-header">
+                    <h1>Personal</h1>
+                    <span id="personal-number" class="personal-number header-number"></span>
+                </div>
+        
+                <button class="add-task__btn" id="personal-task__btn" data-id="personal">
+                    <img src="assets/icons/plus.svg" alt="">Add New Task
+                </button>
+                <div class="tasks personal-tasks" id="personal-tasks">
+                    
+        
+                </div>
             </div>
-    
-            <button class="add-task__btn" id="personal-task__btn">
-                <img src="assets/icons/plus.svg" alt="">Add New Task
-            </button>
-            <div class="tasks personal-tasks" id="personal-tasks">
-    
+            <div class="footer-contents">
+                <div class="buttons-container" data-id="personal-buttons_container">
+                    <button class="footer-buttons" id="delete-button">
+                        Delete
+                    </button>
+                    <button class="footer-buttons" id="complete-button">
+                        Mark as complete
+                    </button>
+                </div>
             </div>
         </div>
     
         <div class="main page" id="work-page">
-            <div class="main-header">
-                <h1>Work</h1>
-                <span id="work-number" class="work-number"></span>
+            <div class="main-contents">
+                <div class="main-header">
+                    <h1>Work</h1>
+                    <span id="work-number" class="work-number header-number"></span>
+                </div>
+        
+                <button class="add-task__btn" id="work-task__btn" data-id="work">
+                    <img src="assets/icons/plus.svg" alt="">Add New Task
+                </button>
+                <div class="tasks work-tasks" id="work-tasks">
+        
+                </div>
             </div>
-    
-            <button class="add-task__btn" id="work-task__btn">
-                <img src="assets/icons/plus.svg" alt="">Add New Task
-            </button>
-            <div class="tasks work-tasks" id="work-tasks">
-    
+
+            <div class="footer-contents">
+                <div class="buttons-container" data-id="work-buttons_container">
+                    <button class="footer-buttons" id="delete-button">
+                        Delete
+                    </button>
+                    <button class="footer-buttons" id="complete-button">
+                        Mark as complete
+                    </button>
+                </div>
             </div>
         </div>
     
@@ -205,7 +248,8 @@
                 <div class="form-groups">
                     <label for="type">List</label>
                     <select name="type" id="type">
-    
+                        <option value="personal">Personal</option>
+                        <option value="work">Work</option>
                     </select>
                 </div>
                 
