@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import './Register.css';
 import { useNavigate, Link} from 'react-router-dom';
+import axios from 'axios';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -18,30 +19,27 @@ const Register = () => {
 
     try {
       console.log('Form data:', formData);
-      const response = await fetch('http://localhost:5000/register', {
-        method: 'POST',
+      const response = await axios.post('http://localhost:5000/register', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
-      }).then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return res.json();
-      }).then((result) => {
-        if (!result.ok) {
-          setIsError(true);
-          setMessage(result.error || 'Registration failed');
-        } else {
-          // Registration successful, navigate to the login page
-          navigate('/login');
-        }
       });
 
-      console.log('Registration successful:', result);
-      
+      if (response.status !== 200 || (response.data && response.data.error)) {
+        setIsError(true);
+        setMessage(response.data.error || 'Registration failed');
+      } else {
+        // Registration successful, navigate to the login page
+        setIsError(false);
+        setMessage('');
+        navigate('/login');
+      }
+
+      console.log('Registration successful:', response.data);
+
     } catch (error) {
+      setIsError(true);
+      setMessage(error.response?.data?.error || 'Error during registration');
       console.error('Error during registration:', error);
     }
   }

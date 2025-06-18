@@ -9,6 +9,7 @@ import { getTaskCounts } from "../utils/taskCounts.js";
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import {
   BrowserRouter as Router,
@@ -92,14 +93,14 @@ function App() {
     
 
   useEffect(() => {
-    fetch("http://localhost:5000/")
+    axios.get("http://localhost:5000/")
       .then((res) => {
         if (res.status === 403 || res.status === 401) {
           navigate('/login');
           setLoading(false);
           throw new Error("Unauthorized access, redirecting to login.");
         }
-        return res.json();
+        return res.data;
       })
       .then((data) => {
         setTasks(data);
@@ -120,14 +121,13 @@ function App() {
   useEffect(() => {
   const fetchTasks = async () => {
     try {
-      const response = await fetch("http://localhost:5000/tasks", {
+      const response = await axios.get("http://localhost:5000/tasks", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-          method: "GET",
         },
       });
 
-      const data = await response.json();
+      const data = response.data;
       setTasks(data);
     } catch (error) {
       console.error('Error fetching tasks:', error);
