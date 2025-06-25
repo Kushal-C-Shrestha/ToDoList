@@ -1,4 +1,4 @@
-import React ,{useState} from "react";
+import React, { useState } from "react";
 import Footer from "./Footer";
 import "./Page.css";
 import TaskCard from "./TaskCard";
@@ -11,23 +11,25 @@ const Page = ({
   setShowForm,
   selectedTask,
   setSelectedTask,
-  footer,
-  setSource
+  setShowFooter,
+  showFooter,
+  setSource,
+  setTasks,
+  setFormData,
+  setTaskId
 }) => {
-
-  const handleFormToggle= (e) => {
+  const handleFormToggle = (e) => {
     console.log("Form toggle clicked");
     setShowForm(!showForm);
-    const target= e.target.dataset.id;
-    if (target=== "personal") {
+    const target = e.target.dataset.id;
+    if (target === "personal") {
       setSource("personal");
     } else if (target === "work") {
       setSource("work");
     } else if (target === "today") {
       setSource("today");
     }
-  }
-
+  };
 
   return (
     <div className="main page active" id={`${title}-page`}>
@@ -57,14 +59,18 @@ const Page = ({
         >
           {tasks.map((task) => (
             <TaskCard
-              key={task.id}
+              key={task._id}
               task={task}
               setSelectedTask={setSelectedTask}
+              tasks={tasks}
+              setShowForm={setShowForm}
+              setFormData={setFormData}
+              setTaskId={setTaskId}
             />
           ))}
         </div>
       </div>
-      {footer && <Footer />}
+      {showFooter && <Footer selectedTasks={selectedTask} setTasks={setTasks} setShowFooter={setShowFooter}/>}
     </div>
   );
 };

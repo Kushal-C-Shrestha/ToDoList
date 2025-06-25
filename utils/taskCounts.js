@@ -1,4 +1,6 @@
 function getTaskCounts(tasks,filteredTasks){
+    console.log(tasks);
+    console.log(filteredTasks);
     const taskCounts={
         upcoming: 0,
         today: 0,   

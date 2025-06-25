@@ -8,9 +8,11 @@ const filterByDate=(tasks)=>{
     };
 
     tasks.forEach(task=>{
-        const taskDate=new Date(task.due_date);
-        taskDate.setHours(0,0,0,0);
-        const taskDateStr=task.due_date;
+        console.log(task.date);
+        const taskDate=new Date(task.date);
+        const taskDateStr=taskDate.toISOString().split("T")[0]; 
+        console.log(taskDateStr);
+
 
         if (taskDateStr===todayStr){
             taskByDates.today.push(task);

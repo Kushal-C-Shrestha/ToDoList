@@ -1,6 +1,26 @@
+import { set } from "mongoose";
 import React from "react";
 
-const TaskCard = ({ task, setSelectedTask }) => {
+const TaskCard = ({
+  task,
+  setSelectedTask,
+  tasks,
+  setShowForm,
+  setTaskId,
+  setFormData
+}) => {
+
+
+  const handleTaskClick = (e) => {
+    const id = e.target.closest(".task").dataset.id;
+    if (e.target.classList.contains("select-box")) return; // Ignore checkbox clicks
+    setShowForm(true);
+    console.log("Task clicked:", tasks);
+    const {_id,...rest}=tasks.find(task=> task._id === id)
+    setTaskId(_id);
+    setFormData(rest);
+  };
+
   const handleTaskSelect = (event) => {
     const taskId = event.target.closest(".task").dataset.id;
     if (event.target.checked) {
@@ -11,7 +31,7 @@ const TaskCard = ({ task, setSelectedTask }) => {
   };
 
   return (
-    <div className="task" data-id={task.id}>
+    <div className="task" data-id={task._id} onClick={handleTaskClick}>
       <input
         type="checkbox"
         className="select-box"

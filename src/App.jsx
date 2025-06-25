@@ -5,24 +5,22 @@ import AddTask from "./components/AddTask.jsx";
 import Page from "./components/Page.jsx";
 import { filterByDate } from "../utils/filterByDate.js";
 import UpcomingPage from "./components/UpcomingPage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { getTaskCounts } from "../utils/taskCounts.js";
 import Login from "./components/Login.jsx";
 import Register from "./components/Register.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   const location = useLocation();
   const pathname = location.pathname;
-  const hideNavBar= pathname === "/login" || pathname === "/register";
+  const hideNavBar = pathname === "/login" || pathname === "/register";
   const navigate = useNavigate();
 
+  const [tasks, setTasks] = useState([]);
   const defaultContext = {
     date: new Date().toISOString().split("T")[0],
     startDate: new Date().toISOString().split("T")[0],
@@ -33,8 +31,11 @@ function App() {
     priority: "Low",
   };
 
-  const [tasks, setTasks] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return !!localStorage.getItem("token");
+  });
   const [loading, setLoading] = useState(true);
+
   const [count, setCount] = useState({
     upcoming: 0,
     today: 0,
@@ -43,13 +44,63 @@ function App() {
     work: 0,
   });
   const [showForm, setShowForm] = useState(false);
-  const [footer, showFooter] = useState(false);
+  const [showFooter, setShowFooter] = useState(false);
   const [selectedTask, setSelectedTask] = useState([]);
   const [context, setContext] = useState(defaultContext);
   const [source, setSource] = useState(null);
+  const [filteredTasks, setFilteredTasks] = useState({
+    today: [],
+    tomorrow: [],
+    week: [],
+  });
 
-  const filteredTasks = filterByDate(tasks);
+  const [taskId, setTaskId] = useState(null);
 
+  const [formData, setFormData] = useState({
+      title: "",
+      description: "",
+      type: "",
+      date: "",
+      priority: "",
+    });
+
+  //To fetch data from the server if the user is logged in.
+  useEffect(() => {
+    if (!isLoggedIn) {
+      console.log("User is not logged in, redirecting to login page.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      setLoading(false);
+      return;
+    }
+
+    const fetchTasks = async () => {
+      try {
+        console.log("Fetching tasks with token:", token);
+        const response = await axios.get("http://localhost:5000/api/tasks", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(response.data);
+        setTasks(response.data);
+        setFilteredTasks(filterByDate(response.data));
+        setCount(getTaskCounts(response.data, filterByDate(response.data)));
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [isLoggedIn]);
+
+  //To set context of the form to populate data based on the source of event.
   useEffect(() => {
     if (source === "today") {
       setContext({
@@ -86,61 +137,22 @@ function App() {
       });
     }
   }, [source]);
-
+  //To show the footer when one or more tasks are selected.
   useEffect(() => {
-    setShowForm(false);
-  },[location])
-    
-
-  useEffect(() => {
-    axios.get("http://localhost:5000/")
-      .then((res) => {
-        if (res.status === 403 || res.status === 401) {
-          navigate('/login');
-          setLoading(false);
-          throw new Error("Unauthorized access, redirecting to login.");
-        }
-        return res.data;
-      })
-      .then((data) => {
-        setTasks(data);
-        setLoading(false);
-      })
-      .catch((err) => console.error("Fetch error:", err));
-  }, []);
-
-  useEffect(() => {
-    setCount(getTaskCounts(tasks, filteredTasks));
-  }, [tasks]);
-
-  useEffect(() => {
-    showFooter(selectedTask.length > 0);
+    setShowFooter(selectedTask.length > 0);
   }, [selectedTask]);
 
-
+  //To close the form when the location changes.
   useEffect(() => {
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/tasks", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+    setShowForm(false);
+    setContext(defaultContext);
+  }, [location]);
 
-      const data = response.data;
-      setTasks(data);
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-    }
-
-    console.log(tasks);
-  };
-
-  fetchTasks();
-}, []);
-
-
-  if (loading) return <div className="loading">Loading...</div>;
+  //To set the count and filter tasks when the tasks change.
+  useEffect(() => {
+    setFilteredTasks(filterByDate(tasks));
+    setCount(getTaskCounts(tasks, filterByDate(tasks)));
+  }, [tasks]);
 
   return (
     <>
@@ -149,89 +161,136 @@ function App() {
         <Route
           path="/"
           element={
-            <UpcomingPage
-              showForm={showForm}
-              setShowForm={setShowForm}
-              title="Upcoming"
-              taskCount={count.upcoming}
-              tasks={filteredTasks}
-              selectedTask={selectedTask}
-              setSelectedTask={setSelectedTask}
-              footer={footer}
-              setSource={setSource}
-            />
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              {!loading ? (
+                <UpcomingPage
+                  showForm={showForm}
+                  setShowForm={setShowForm}
+                  title="Upcoming"
+                  taskCount={count.upcoming}
+                  tasks={filteredTasks}
+                  selectedTask={selectedTask}
+                  setSelectedTask={setSelectedTask}
+                  showFooter={showFooter}
+                  setShowFooter={setShowFooter}
+                  setSource={setSource}
+                  setTasks={setTasks}
+                  setTaskId={setTaskId}
+                  setFormData={setFormData}
+                />
+              ) : (
+                <div className="loading">Loading tasks...</div>
+              )}
+            </ProtectedRoute>
           }
         />
         <Route
           path="/today"
           element={
-            <Page
-              showForm={showForm}
-              setShowForm={setShowForm}
-              title="Today"
-              taskCount={count.today}
-              tasks={filteredTasks.today}
-              selectedTask={selectedTask}
-              setSelectedTask={setSelectedTask}
-              footer={footer}
-              setSource={setSource}
-            />
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <Page
+                showForm={showForm}
+                setShowForm={setShowForm}
+                title="Today"
+                taskCount={count.today}
+                tasks={filteredTasks.today}
+                selectedTask={selectedTask}
+                setSelectedTask={setSelectedTask}
+                showFooter={showFooter}
+                setShowFooter={setShowFooter}
+                setSource={setSource}
+                setTasks={setTasks}
+                setTaskId={setTaskId}
+                setFormData={setFormData}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/all"
           element={
-            <Page
-              title="All Tasks"
-              tasks={tasks}
-              taskCount={tasks.length}
-              showForm={showForm}
-              setShowForm={setShowForm}
-              selectedTask={selectedTask}
-              setSelectedTask={setSelectedTask}
-              footer={footer}
-              setSource={setSource}
-            />
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <Page
+                title="All Tasks"
+                tasks={tasks}
+                taskCount={tasks.length}
+                showForm={showForm}
+                setShowForm={setShowForm}
+                selectedTask={selectedTask}
+                setSelectedTask={setSelectedTask}
+                showFooter={showFooter}
+                setShowFooter={setShowFooter}
+                setSource={setSource}
+                setTasks={setTasks}
+                setTaskId={setTaskId}
+                setFormData={setFormData}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/personal"
           element={
-            <Page
-              title="Personal"
-              tasks={tasks.filter((task) => task.type === "personal")}
-              taskCount={count.personal}
-              showForm={showForm}
-              setShowForm={setShowForm}
-              selectedTask={selectedTask}
-              setSelectedTask={setSelectedTask}
-              footer={footer}
-              setSource={setSource}
-            />
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <Page
+                title="Personal"
+                tasks={tasks.filter((task) => task.type === "personal")}
+                taskCount={count.personal}
+                showForm={showForm}
+                setShowForm={setShowForm}
+                selectedTask={selectedTask}
+                setSelectedTask={setSelectedTask}
+                showFooter={showFooter}
+                setShowFooter={setShowFooter}
+                setSource={setSource}
+                setTasks={setTasks}
+                setTaskId={setTaskId}
+                setFormData={setFormData}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/work"
           element={
-            <Page
-              title="Work"
-              tasks={tasks.filter((task) => task.type === "work")}
-              taskCount={count.work}
-              showForm={showForm}
-              setShowForm={setShowForm}
-              selectedTask={selectedTask}
-              setSelectedTask={setSelectedTask}
-              footer={footer}
-              setSource={setSource}
-            />
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <Page
+                title="Work"
+                tasks={tasks.filter((task) => task.type === "work")}
+                taskCount={count.work}
+                showForm={showForm}
+                setShowForm={setShowForm}
+                selectedTask={selectedTask}
+                setSelectedTask={setSelectedTask}
+                showFooter={showFooter}
+                setShowFooter={setShowFooter}
+                setSource={setSource}
+                setTasks={setTasks}
+                setTaskId={setTaskId}
+                setFormData={setFormData}
+              />
+            </ProtectedRoute>
           }
         />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login setIsLoggedIn={setIsLoggedIn} />}
+        />
         <Route path="/register" element={<Register />} />
       </Routes>
 
-      {showForm && <AddTask setShowForm={setShowForm} context={context} />}
-      </>
+      {showForm && (
+        <AddTask
+          setShowForm={setShowForm}
+          context={context}
+          setTasks={setTasks}
+          taskId={taskId}
+          setTaskId={setTaskId}
+          formData={formData}
+          setFormData={setFormData}
+        />
+      )}
+    </>
   );
 }
 

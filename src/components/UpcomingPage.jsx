@@ -1,11 +1,26 @@
 import React from "react";
 import Footer from "./Footer";
 import TaskCard from "./TaskCard";
+import { set } from "mongoose";
 
-const UpcomingPage = ({title,tasks,taskCount,showForm,setShowForm,setSelectedTask,footer,setSource}) => {
-  const handleFormToggle= (e) => {
+const UpcomingPage = ({
+  title,
+  tasks,
+  taskCount,
+  setShowForm,
+  showForm,
+  selectedTask,
+  setSelectedTask,
+  showFooter,
+  setShowFooter,
+  setSource,
+  setTasks,
+  setTaskId,
+  setFormData
+}) => {
+  const handleFormToggle = (e) => {
     setShowForm(!showForm);
-    const target= e.target.dataset.id;
+    const target = e.target.dataset.id;
     if (target === "today") {
       setSource("today");
     } else if (target === "tomorrow") {
@@ -20,10 +35,7 @@ const UpcomingPage = ({title,tasks,taskCount,showForm,setShowForm,setSelectedTas
       <div className="main-contents">
         <div className="main-header">
           <h1>{title}</h1>
-          <span
-            id="upcoming-number"
-            className="upcoming-number header-number"
-          >
+          <span id="upcoming-number" className="upcoming-number header-number">
             {taskCount}
           </span>
         </div>
@@ -40,7 +52,15 @@ const UpcomingPage = ({title,tasks,taskCount,showForm,setShowForm,setSelectedTas
           </button>
           <div className="tasks today-tasks" id="today-tasks">
             {tasks.today.map((task) => (
-              <TaskCard key={task.id} task={task} setSelectedTask={setSelectedTask} />
+              <TaskCard
+                key={task._id}
+                task={task}
+                tasks={tasks.today}
+                setSelectedTask={setSelectedTask}
+                setShowForm={setShowForm}
+                setTaskId={setTaskId}
+                setFormData={setFormData}
+              />
             ))}
           </div>
         </div>
@@ -57,7 +77,15 @@ const UpcomingPage = ({title,tasks,taskCount,showForm,setShowForm,setSelectedTas
             </button>
             <div className="tasks tomorrow-tasks" id="tomorrow-tasks">
               {tasks.tomorrow.map((task) => (
-                <TaskCard key={task.id} task={task} setSelectedTask={setSelectedTask} />
+                <TaskCard
+                  key={task._id}
+                  task={task}
+                  tasks={tasks.tomorrow}
+                  setSelectedTask={setSelectedTask}
+                  setShowForm={setShowForm}
+                  setTaskId={setTaskId}
+                  setFormData={setFormData}
+                />
               ))}
             </div>
           </div>
@@ -73,13 +101,27 @@ const UpcomingPage = ({title,tasks,taskCount,showForm,setShowForm,setSelectedTas
             </button>
             <div className="tasks week-tasks" id="week-tasks">
               {tasks.week.map((task) => (
-                <TaskCard key={task.id} task={task} setSelectedTask={setSelectedTask} />
+                <TaskCard
+                  key={task._id}
+                  task={task}
+                  tasks={tasks.week}
+                  setSelectedTask={setSelectedTask}
+                  setShowForm={setShowForm}
+                  setTaskId={setTaskId}
+                  setFormData={setFormData}
+                />
               ))}
             </div>
           </div>
         </div>
       </div>
-      {footer && <Footer />}
+      {showFooter && (
+        <Footer
+          selectedTasks={selectedTask}
+          setTasks={setTasks}
+          setShowFooter={setShowFooter}
+        />
+      )}
     </div>
   );
 };

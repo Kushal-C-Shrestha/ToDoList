@@ -27,6 +27,7 @@ const loginUser = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match status:", isMatch);
 
     if (!isMatch) {
       console.log("Incorrect password");
@@ -36,13 +37,12 @@ const loginUser = async (req, res) => {
     console.log("User authenticated");
     console.log(JWT_SECRET);
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
-
+    console.log(user._id);
     res.json({
       token,
       user: {
         id: user._id,
-        username: user.username,
-        email: user.email,
+        username: user.username
       },
     });
   } catch (error) {
